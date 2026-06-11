@@ -1,0 +1,36 @@
+[build]
+  publish   = "."
+  functions = "netlify/functions"
+
+[[scheduled_functions]]
+  name     = "keep-alive"
+  schedule = "0 8 */4 * *"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options            = "DENY"
+    X-XSS-Protection           = "1; mode=block"
+    X-Content-Type-Options     = "nosniff"
+    Referrer-Policy            = "strict-origin-when-cross-origin"
+    Cache-Control              = "public, max-age=3600"
+
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[redirects]]
+  from   = "/tienda"
+  to     = "https://axentral.gumroad.com"
+  status = 301
+
+[[redirects]]
+  from   = "/contacto"
+  to     = "mailto:hola@axentral.com"
+  status = 301
+
+[[redirects]]
+  from   = "/keep-alive"
+  to     = "/.netlify/functions/keep-alive"
+  status = 200
