@@ -4,8 +4,8 @@
 [functions]
   directory = "netlify/functions"
 
-[functions."keep-alive-scheduled"]
-  schedule = "0 8 */4 * *"
+[functions."keep-alive"]
+  schedule = "0 */6 * * *"
 
 [[headers]]
   for = "/*"
