@@ -5,7 +5,7 @@
   directory = "netlify/functions"
 
 [functions."keep-alive"]
-  schedule = "0 */6 * * *"
+  schedule = "0 */3 * * *"
 
 [[headers]]
   for = "/*"
