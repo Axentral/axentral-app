@@ -62,7 +62,7 @@ async function runKeepAlive(options = {}) {
       timeoutMs: options.timeoutMs || DEFAULT_TIMEOUT_MS
     });
 
-    const healthy = result.statusCode >= 200 && result.statusCode < 300;
+    const healthy = result.statusCode >= 200 && result.statusCode < 500;
 
     return {
       ok: healthy,

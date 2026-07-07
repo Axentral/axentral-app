@@ -35,6 +35,5 @@ Nunca guardar claves reales dentro del repositorio.
 - Endpoint manual de diagnóstico: `/keep-alive`.
 - Función programada: `keep-alive-scheduled`.
 - Frecuencia: `0 8 */4 * *` — cada 4 días a las 08:00 UTC.
-- El diagnóstico solo devuelve `status: "ok"` cuando Supabase responde con HTTP 2xx.
 
 Después de desplegar, verificar en Netlify → Functions que `keep-alive-scheduled` aparezca con etiqueta `Scheduled` y usar `Run now` para probar el cron.

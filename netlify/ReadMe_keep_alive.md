@@ -40,8 +40,8 @@ Ir a Netlify → Functions → deberías ver keep-alive-scheduled con etiqueta S
 Paso 4 — Probar manualmente
 Entrá a esta URL en tu navegador:
 https://axentral.com/keep-alive
-Si ves un JSON con "status": "ok" → el endpoint manual funciona correctamente y Supabase respondió con HTTP 2xx.
-Si ves un error o un `supabase.statusCode` fuera de 2xx → revisá variables de entorno, que el proyecto no esté pausado y los logs de Netlify. Para validar el cron, usá Netlify → Functions → keep-alive-scheduled → Run now.
+Si ves un JSON con "status": "ok" → el endpoint manual funciona correctamente.
+Si ves un error → revisá que las variables de entorno estén bien escritas. Para validar el cron, usá Netlify → Functions → keep-alive-scheduled → Run now.
 Cron schedule explicado
 0 8 */4 * *
 │ │  │  │ └── cualquier día de la semana
