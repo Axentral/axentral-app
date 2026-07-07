@@ -1,10 +1,12 @@
 Axentral — Keep-Alive para Supabase
 Previene que el proyecto de Supabase se pause por inactividad (plan gratuito = 7 días sin actividad → pausa automática).
 Cómo funciona
-Una función serverless en Netlify hace ping a Supabase automáticamente cada 4 días, sin que nadie tenga que hacer nada.
-Netlify Scheduler (cada 4 días)
+Una función serverless en Netlify hace ping a Supabase automáticamente cada hora, sin que nadie tenga que hacer nada.
+Netlify Scheduler (cada hora)
         ↓
-netlify/functions/keep-alive.js
+netlify/functions/keep-alive-scheduled.js
+        ↓
+netlify/functions/lib/supabase-keep-alive.js
         ↓
 Supabase REST API → proyecto despierto ✅
 Pasos para activarlo
@@ -16,7 +18,10 @@ axentral-app/
 ├── README.md           (este archivo)
 └── netlify/
     └── functions/
-        └── keep-alive.js   (nuevo)
+        ├── keep-alive.js             (endpoint manual / diagnóstico)
+        ├── keep-alive-scheduled.js   (función programada)
+        └── lib/
+            └── supabase-keep-alive.js (lógica compartida)
 Paso 2 — Agregar las variables de entorno en Netlify
 Ir a app.netlify.com → tu proyecto axentral-app
 Site Settings → Environment Variables
@@ -31,20 +36,20 @@ Clic en Save
 Paso 3 — Verificar que Netlify recibió los cambios
 Hacer push de los archivos a GitHub (rama main)
 Netlify detecta el cambio y republica automáticamente
-Ir a Netlify → Functions → deberías ver keep-alive en la lista
+Ir a Netlify → Functions → deberías ver keep-alive-scheduled con etiqueta Scheduled
 Paso 4 — Probar manualmente
 Entrá a esta URL en tu navegador:
 https://axentral.com/keep-alive
-Si ves un JSON con "status": "ok" → todo funciona correctamente.
-Si ves un error → revisá que las variables de entorno estén bien escritas.
+Si ves un JSON con "status": "ok" → el endpoint manual funciona correctamente y Supabase respondió con HTTP 2xx.
+Si ves un error o un `supabase.statusCode` fuera de 2xx → revisá variables de entorno, que el proyecto no esté pausado y los logs de Netlify. Para validar el cron, usá Netlify → Functions → keep-alive-scheduled → Run now.
 Cron schedule explicado
-0 8 */4 * *
-│ │  │  │ └── cualquier día de la semana
-│ │  │  └──── cualquier mes
-│ │  └─────── cada 4 días
-│ └────────── a las 8 AM (UTC)
-└──────────── minuto 0
-Esto significa: ejecutar a las 8 AM cada 4 días. Como Supabase pausa a los 7 días, 4 días da un margen cómodo.
+0 * * * *
+│ │ │ │ └── cualquier día de la semana
+│ │ │ └──── cualquier mes
+│ │ └────── cualquier día del mes
+│ └──────── cada hora
+└────────── minuto 0
+Esto significa: ejecutar una vez por hora en el minuto 0.
 Variables de entorno necesarias
 Variable
 Dónde conseguirla

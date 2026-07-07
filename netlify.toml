@@ -1,10 +1,11 @@
 [build]
   publish   = "."
-  functions = "netlify/functions"
 
-[[scheduled_functions]]
-  name     = "keep-alive"
-  schedule = "0 8 */4 * *"
+[functions]
+  directory = "netlify/functions"
+
+[functions."keep-alive-scheduled"]
+  schedule = "0 * * * *"
 
 [[headers]]
   for = "/*"
@@ -13,6 +14,7 @@
     X-XSS-Protection           = "1; mode=block"
     X-Content-Type-Options     = "nosniff"
     Referrer-Policy            = "strict-origin-when-cross-origin"
+    Permissions-Policy         = "camera=(), microphone=(), geolocation=()"
     Cache-Control              = "public, max-age=3600"
 
 [[headers]]
