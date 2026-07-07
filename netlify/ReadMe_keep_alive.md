@@ -1,8 +1,8 @@
 Axentral — Keep-Alive para Supabase
 Previene que el proyecto de Supabase se pause por inactividad (plan gratuito = 7 días sin actividad → pausa automática).
 Cómo funciona
-Una función serverless en Netlify hace ping a Supabase automáticamente cada 4 días, sin que nadie tenga que hacer nada.
-Netlify Scheduler (cada 4 días)
+Una función serverless en Netlify hace ping a Supabase automáticamente cada hora, sin que nadie tenga que hacer nada.
+Netlify Scheduler (cada hora)
         ↓
 netlify/functions/keep-alive-scheduled.js
         ↓
