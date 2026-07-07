@@ -43,13 +43,13 @@ https://axentral.com/keep-alive
 Si ves un JSON con "status": "ok" → el endpoint manual funciona correctamente.
 Si ves un error → revisá que las variables de entorno estén bien escritas. Para validar el cron, usá Netlify → Functions → keep-alive-scheduled → Run now.
 Cron schedule explicado
-0 8 */4 * *
-│ │  │  │ └── cualquier día de la semana
-│ │  │  └──── cualquier mes
-│ │  └─────── cada 4 días
-│ └────────── a las 8 AM (UTC)
-└──────────── minuto 0
-Esto significa: ejecutar a las 8 AM UTC cada 4 días. Como Supabase pausa por inactividad, 4 días da un margen cómodo.
+0 * * * *
+│ │ │ │ └── cualquier día de la semana
+│ │ │ └──── cualquier mes
+│ │ └────── cualquier día del mes
+│ └──────── cada hora
+└────────── minuto 0
+Esto significa: ejecutar cada hora en el minuto 0 para mantener actividad frecuente en Supabase.
 Variables de entorno necesarias
 Variable
 Dónde conseguirla
