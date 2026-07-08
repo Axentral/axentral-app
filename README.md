@@ -7,6 +7,25 @@ Landing page estática de Axentral con despliegue en Netlify y función keep-ali
 ```text
 axentral-app/
 ├── index.html
+├── assets/
+│   ├── css/
+│   │   └── styles.css
+│   └── js/
+│       └── main.js
+├── servicios-y-apps/
+│   ├── index.html
+│   ├── control-inventarios.html
+│   ├── calculadora-precios-iva.html
+│   ├── control-compras-gastos.html
+│   └── escaner-facturas.html
+├── conta-ai/
+│   └── index.html
+├── portal/
+│   └── index.html
+├── contacto/
+│   └── index.html
+├── docs/
+│   └── decisiones-producto.md
 ├── netlify.toml
 └── netlify/
     ├── ReadMe_keep_alive.md
