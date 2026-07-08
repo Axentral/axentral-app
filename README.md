@@ -7,6 +7,25 @@ Landing page estática de Axentral con despliegue en Netlify y función keep-ali
 ```text
 axentral-app/
 ├── index.html
+├── assets/
+│   ├── css/
+│   │   └── styles.css
+│   └── js/
+│       └── main.js
+├── servicios-y-apps/
+│   ├── index.html
+│   ├── control-inventarios.html
+│   ├── calculadora-precios-iva.html
+│   ├── control-compras-gastos.html
+│   └── escaner-facturas.html
+├── conta-ai/
+│   └── index.html
+├── portal/
+│   └── index.html
+├── contacto/
+│   └── index.html
+├── docs/
+│   └── decisiones-producto.md
 ├── netlify.toml
 └── netlify/
     ├── ReadMe_keep_alive.md
@@ -34,6 +53,6 @@ Nunca guardar claves reales dentro del repositorio.
 
 - Endpoint manual de diagnóstico: `/keep-alive`.
 - Función programada: `keep-alive-scheduled`.
-- Frecuencia: `0 8 */4 * *` — cada 4 días a las 08:00 UTC.
+- Frecuencia: `0 * * * *` — cada hora en el minuto 0.
 
 Después de desplegar, verificar en Netlify → Functions que `keep-alive-scheduled` aparezca con etiqueta `Scheduled` y usar `Run now` para probar el cron.
