@@ -36,7 +36,7 @@ export function renderShell(root) {
         <div class="container">
           <div class="panel">
             <div class="eyebrow">Módulos ContaAI</div>
-            <nav class="card-actions" data-module-nav aria-label="Módulos de ContaAI">${renderModuleNav()}</nav>
+            <div class="card-actions" data-module-nav>${renderModuleNav()}</div>
           </div>
         </div>
       </section>
@@ -46,7 +46,7 @@ export function renderShell(root) {
           <aside class="panel" aria-label="Navegación interna de Finanzas">
             <div class="eyebrow">Finanzas</div>
             <h2>Vistas del MVP</h2>
-            <nav class="card-actions" data-finance-nav aria-label="Vistas de ContaAI Finanzas">${renderFinanceNav()}</nav>
+            <div class="card-actions" data-finance-nav>${renderFinanceNav()}</div>
           </aside>
           <section class="panel" data-view-region aria-live="polite" aria-label="Contenido de ContaAI Finanzas"></section>
         </div>
