@@ -1,0 +1,208 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 Calibri;}{\f1 Courier New;}}
+\fs24
+\b\fs36 Axentral - Documento general del proyecto\b0\fs24\par
+\par
+\b\fs30 1. Resumen ejecutivo\b0\fs24\par
+\par
+Axentral es una plataforma financiera y contable para emprendedores, personas y PyMES de Latinoamérica. La visión es reunir en un mismo ecosistema plantillas Excel, apps financieras, Conta AI, un portal privado de clientes y recursos gratuitos para ayudar a los usuarios a ordenar, calcular, comprar, pagar y tomar mejores decisiones.\par
+\par
+El proyecto ya evolucionó de una landing estática a una estructura multi-página con assets compartidos, modo claro/oscuro, catálogo inicial, páginas individuales de apps y documentación de decisiones.\par
+\par
+\b\fs30 2. Propósito de Axentral\b0\fs24\par
+\par
+El propósito de Axentral es hacer que la tecnología financiera trabaje para el usuario, no al revés. La plataforma busca reducir la confusión administrativa y dar herramientas simples para controlar gastos, inventarios, precios, facturas, pagos y reportes.\par
+\par
+\b\fs30 3. Público objetivo\b0\fs24\par
+\par
+\bullet\tab Emprendedores pequeños.\par
+\bullet\tab PyMES.\par
+\bullet\tab Personas que quieren ordenar sus finanzas.\par
+\bullet\tab Negocios que necesitan calcular precios, controlar inventarios y registrar gastos.\par
+\bullet\tab Clientes interesados en herramientas contables más simples y con soporte digital.\par
+\par
+\b\fs30 4. Estructura actual del repositorio\b0\fs24\par
+\par
+\f1\fs20 axentral-app/\f0\fs24\par
+\f1\fs20 |── index.html\f0\fs24\par
+\f1\fs20 |── assets/\f0\fs24\par
+\f1\fs20 |   |── css/\f0\fs24\par
+\f1\fs20 |   |   |── styles.css\f0\fs24\par
+\f1\fs20 |   |── js/\f0\fs24\par
+\f1\fs20 |       |── main.js\f0\fs24\par
+\f1\fs20 |── servicios-y-apps/\f0\fs24\par
+\f1\fs20 |   |── index.html\f0\fs24\par
+\f1\fs20 |   |── control-inventarios.html\f0\fs24\par
+\f1\fs20 |   |── calculadora-precios-iva.html\f0\fs24\par
+\f1\fs20 |   |── control-compras-gastos.html\f0\fs24\par
+\f1\fs20 |   |── escaner-facturas.html\f0\fs24\par
+\f1\fs20 |── conta-ai/\f0\fs24\par
+\f1\fs20 |   |── index.html\f0\fs24\par
+\f1\fs20 |── portal/\f0\fs24\par
+\f1\fs20 |   |── index.html\f0\fs24\par
+\f1\fs20 |── contacto/\f0\fs24\par
+\f1\fs20 |   |── index.html\f0\fs24\par
+\f1\fs20 |── docs/\f0\fs24\par
+\f1\fs20 |   |── decisiones-producto.md\f0\fs24\par
+\f1\fs20 |   |── axentral-proyecto.md\f0\fs24\par
+\f1\fs20 |── netlify.toml\f0\fs24\par
+\f1\fs20 |── netlify/\f0\fs24\par
+\f1\fs20     |── ReadMe_keep_alive.md\f0\fs24\par
+\f1\fs20     |── functions/\f0\fs24\par
+\f1\fs20         |── keep-alive.js\f0\fs24\par
+\f1\fs20         |── keep-alive-scheduled.js\f0\fs24\par
+\f1\fs20         |── lib/\f0\fs24\par
+\f1\fs20             |── supabase-keep-alive.js\f0\fs24\par
+\par
+\b\fs30 5. Navegación aprobada\b0\fs24\par
+\par
+La navegación principal aprobada para Axentral es:\par
+\par
+\f1\fs20 Inicio | Servicios y Apps | Conta AI | Portal | Contacto\f0\fs24\par
+\par
+\b\fs26 Inicio\b0\fs24\par
+\par
+La página de inicio explica qué es Axentral, su misión, visión y propósito. También presenta las categorías principales, recursos gratuitos futuros y enlaces hacia Servicios y Apps, Conta AI y Portal.\par
+\par
+\b\fs26 Servicios y Apps\b0\fs24\par
+\par
+Es el catálogo principal de productos, herramientas y apps. Cada elemento se muestra en formato mosaico/lista con estado, descripción corta, precio o lista de espera, y botón para ver más información.\par
+\par
+\b\fs26 Conta AI\b0\fs24\par
+\par
+Conta AI será una sección separada, como producto independiente. Contendrá información del programa, cómo se usará, detalles funcionales, próximas actualizaciones, roadmap, lista de espera y acceso futuro.\par
+\par
+\b\fs26 Portal\b0\fs24\par
+\par
+El portal será la zona privada donde el cliente podrá crear cuenta, iniciar sesión, comprar, revisar productos, facturas, pagos, estados de cuenta y datos privados.\par
+\par
+\b\fs26 Contacto\b0\fs24\par
+\par
+La página de contacto concentra consultas, soporte, orientación y lista de espera para Conta AI o futuras apps.\par
+\par
+\b\fs30 6. Productos y apps iniciales\b0\fs24\par
+\par
+Las primeras cuatro apps/herramientas aprobadas son:\par
+\par
+1. Control de inventarios.\par
+2. Calculadora de precios, ganancia e IVA.\par
+3. Control de compras y gastos personales o PyME.\par
+4. Escáner de facturas.\par
+\par
+La app tipo datáfono o cobro con tarjeta queda fuera de esta etapa inicial por complejidad técnica, financiera y regulatoria.\par
+\par
+\b\fs30 7. Estados de productos\b0\fs24\par
+\par
+Cada producto, app o servicio debe mostrar un estado visible para dar claridad al usuario.\par
+\par
+Estados sugeridos:\par
+\par
+\bullet\tab Disponible.\par
+\bullet\tab En actualización.\par
+\bullet\tab Próximamente.\par
+\bullet\tab En desarrollo.\par
+\bullet\tab No disponible temporalmente.\par
+\par
+\b\fs30 8. Flujo esperado de compra\b0\fs24\par
+\par
+El flujo propuesto para compra y acceso es:\par
+\par
+1. El cliente visita Servicios y Apps.\par
+2. Abre la página individual de un producto o app.\par
+3. Revisa qué es, para qué sirve, cómo se usa, video, precio y estado.\par
+4. Decide comprar o solicitar acceso.\par
+5. Se redirige al Portal.\par
+6. Crea cuenta o inicia sesión.\par
+7. Agrega el producto al carrito.\par
+8. Procesa la compra con datos privados.\par
+9. Accede a productos, facturas, pagos y registros desde su cuenta.\par
+\par
+\b\fs30 9. Conta AI\b0\fs24\par
+\par
+Conta AI será el programa contable inteligente de Axentral. Su enfoque inicial es organizar gastos, compras, inventarios, precios, facturas y reportes para emprendedores y PyMES.\par
+\par
+Fases sugeridas:\par
+\par
+\bullet\tab Fase 1: lista de espera y explicación del producto.\par
+\bullet\tab Fase 2: módulos iniciales de gastos, precios e inventario.\par
+\bullet\tab Fase 3: análisis inteligente y reportes automatizados.\par
+\par
+\b\fs30 10. Portal Axentral\b0\fs24\par
+\par
+El portal será la zona privada para el cliente. Su objetivo será dar orden y privacidad al proceso de compra y administración.\par
+\par
+Funciones futuras:\par
+\par
+\bullet\tab Crear cuenta.\par
+\bullet\tab Iniciar sesión.\par
+\bullet\tab Comprar productos.\par
+\bullet\tab Ver productos comprados.\par
+\bullet\tab Ver facturas pendientes y pagadas.\par
+\bullet\tab Ver estados de cuenta.\par
+\bullet\tab Ver pagos asociados a productos.\par
+\bullet\tab Gestionar datos privados.\par
+\par
+\b\fs30 11. Diseño visual\b0\fs24\par
+\par
+El diseño aprobado es un estilo fintech profesional con soporte para dos temas:\par
+\par
+\bullet\tab Modo oscuro.\par
+\bullet\tab Modo claro.\par
+\par
+La razón es permitir que los usuarios elijan la experiencia de lectura que prefieran.\par
+\par
+\b\fs30 12. Tecnología actual\b0\fs24\par
+\par
+\bullet\tab Sitio estático HTML.\par
+\bullet\tab CSS compartido en `assets/css/styles.css`.\par
+\bullet\tab JavaScript compartido en `assets/js/main.js`.\par
+\bullet\tab Modo claro/oscuro con `localStorage`.\par
+\bullet\tab Despliegue en Netlify desde la raíz del repositorio.\par
+\bullet\tab Netlify Functions en `netlify/functions`.\par
+\bullet\tab Supabase keep-alive programado cada hora.\par
+\par
+\b\fs30 13. Supabase keep-alive\b0\fs24\par
+\par
+El proyecto incluye una función manual y una función programada para mantener activo Supabase.\par
+\par
+\bullet\tab Endpoint manual: `/keep-alive`.\par
+\bullet\tab Función programada: `keep-alive-scheduled`.\par
+\bullet\tab Frecuencia: `0 * * * *`, cada hora en el minuto 0.\par
+\bullet\tab Variables necesarias: `SUPABASE_URL` y `SUPABASE_ANON_KEY`.\par
+\par
+\b\fs30 14. Estado actual del proyecto\b0\fs24\par
+\par
+El proyecto ya cuenta con:\par
+\par
+\bullet\tab Página de inicio como plataforma.\par
+\bullet\tab Catálogo de Servicios y Apps.\par
+\bullet\tab Páginas individuales iniciales.\par
+\bullet\tab Página de Conta AI.\par
+\bullet\tab Página de Portal.\par
+\bullet\tab Página de Contacto.\par
+\bullet\tab Modo claro y oscuro.\par
+\bullet\tab Documentación de decisiones de producto.\par
+\bullet\tab Configuración Netlify.\par
+\bullet\tab Keep-alive de Supabase.\par
+\par
+\b\fs30 15. Riesgos o pendientes importantes\b0\fs24\par
+\par
+\bullet\tab Formatear HTML y CSS para que sea más fácil de mantener.\par
+\bullet\tab Agregar formularios reales para contacto y lista de espera.\par
+\bullet\tab Agregar imágenes, mockups o videos explicativos.\par
+\bullet\tab Definir precios reales.\par
+\bullet\tab Crear el primer prototipo funcional de la calculadora de precios e IVA.\par
+\bullet\tab Diseñar la base de datos futura para portal, clientes, compras, facturas y pagos.\par
+\bullet\tab Revisar requisitos legales y técnicos antes de cualquier funcionalidad tipo cobro con tarjeta o datáfono.\par
+\par
+\b\fs30 16. Próximos pasos recomendados\b0\fs24\par
+\par
+1. Formatear y limpiar HTML/CSS.\par
+2. Mejorar accesibilidad básica.\par
+3. Crear formularios de contacto y lista de espera.\par
+4. Desarrollar la calculadora de precios e IVA como primera app funcional.\par
+5. Preparar estructura de datos del portal.\par
+6. Agregar contenido visual real.\par
+7. Definir precios y flujo comercial.\par
+8. Seguir documentando decisiones del proyecto.\par
+}

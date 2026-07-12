@@ -4,8 +4,8 @@
 [functions]
   directory = "netlify/functions"
 
-[functions."keep-alive"]
-  schedule = "0 */3 * * *"
+[functions."keep-alive-scheduled"]
+  schedule = "0 * * * *"
 
 [[headers]]
   for = "/*"
@@ -25,11 +25,6 @@
 [[redirects]]
   from   = "/tienda"
   to     = "https://axentral.gumroad.com"
-  status = 301
-
-[[redirects]]
-  from   = "/contacto"
-  to     = "mailto:hola@axentral.com"
   status = 301
 
 [[redirects]]
