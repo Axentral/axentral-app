@@ -1,1 +1,144 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Calculadora de precios e IVA de Axentral."><title>Calculadora de precios e IVA — Axentral</title><link rel="stylesheet" href="/assets/css/styles.css"></head><body><header class="site-header"><div class="container nav"><a class="logo" href="/">AX<span>ENTRAL</span></a><ul class="nav-links"><li><a href="/">Inicio</a></li><li><a class="active" href="/servicios-y-apps/">Servicios y Apps</a></li><li><a href="/conta-ai/">Conta AI</a></li><li><a href="/portal/">Portal</a></li><li><a href="/contacto/">Contacto</a></li></ul><div class="nav-actions"><button class="theme-toggle" data-theme-toggle>☀️ Modo claro</button><a class="btn btn-secondary" href="/portal/">Iniciar sesión</a></div></div></header><main><section class="page-title"><div class="container"><span class="status progress">En desarrollo</span><div class="eyebrow">Servicios y Apps</div><h1>🧮 Calculadora de precios e IVA</h1><p>Calcula costo, margen, ganancia, IVA y precio recomendado para vender con claridad.</p><div class="hero-actions"><a class="btn btn-primary" href="/portal/">Crear cuenta para comprar</a><a class="btn btn-secondary" href="/servicios-y-apps/">Volver al catálogo</a></div></div></section><section class="section"><div class="container detail-layout"><article class="panel"><h2>Para qué sirve</h2><p class="muted">Definir precios que consideren inversión, recuperación, ganancia e impuestos según el caso.</p><h2 style="margin-top:1.4rem">Cómo se manejará</h2><ul class="list"><li>Ingresar costo e inversión.</li><li>Seleccionar tipo de impuesto o porcentaje.</li><li>Definir margen deseado.</li><li>Obtener precio sugerido, ganancia e IVA estimado.</li></ul><div class="video-placeholder">Video explicativo próximamente</div></article><aside class="panel"><h2>Compra y acceso</h2><p class="muted">Cuando esté disponible, la compra se realizará desde el Portal para proteger los datos del cliente y asociar productos, facturas y pagos a su cuenta.</p><div class="price">Precio por definir</div><div class="card-actions"><a class="btn btn-primary" href="/portal/">Ir al portal</a><a class="btn btn-secondary" href="/contacto/">Consultar</a></div></aside></div></section></main><footer class="footer"><div class="container footer-grid"><strong>AXENTRAL</strong><span>Calculadora de precios e IVA</span><a href="/contacto/">Contacto</a></div></footer><script src="/assets/js/main.js"></script></body></html>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Calculadora de precios e IVA de Axentral."><title>Calculadora de precios e IVA — Axentral</title><link rel="stylesheet" href="/assets/css/styles.css">
+<style>
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.field{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+.field label{font-size:.85rem;font-weight:700;color:var(--text)}
+.field small{color:var(--muted);font-size:.78rem}
+.field input,.field select{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:.7rem .85rem;font-size:1rem;font-family:inherit}
+.field input:focus,.field select:focus{outline:none;border-color:var(--neon)}
+.results{background:var(--surface-2);border:1px solid var(--border);border-radius:18px;padding:1.2rem;margin-top:.5rem}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--border)}
+.result-row:last-child{border-bottom:none}
+.result-row span:first-child{color:var(--muted);font-size:.9rem}
+.result-row span:last-child{font-weight:800;font-size:1.05rem}
+.result-row.highlight span:last-child{color:var(--neon);font-size:1.4rem}
+.warn-msg{color:var(--danger);font-size:.85rem;margin-top:.5rem;display:none}
+@media(max-width:640px){.calc-grid{grid-template-columns:1fr}}
+</style>
+</head><body><header class="site-header"><div class="container nav"><a class="logo" href="/">AX<span>ENTRAL</span></a><ul class="nav-links"><li><a href="/">Inicio</a></li><li><a class="active" href="/servicios-y-apps/">Servicios y Apps</a></li><li><a href="/conta-ai/">Conta AI</a></li><li><a href="/portal/">Portal</a></li><li><a href="/contacto/">Contacto</a></li></ul><div class="nav-actions"><button class="theme-toggle" data-theme-toggle>☀️ Modo claro</button><a class="btn btn-secondary" href="/portal/">Iniciar sesión</a></div></div></header><main><section class="page-title"><div class="container"><span class="status available">Disponible</span><div class="eyebrow">Servicios y Apps</div><h1>🧮 Calculadora de precios e IVA</h1><p>Calcula costo, margen, ganancia, IVA y precio recomendado para vender con claridad.</p></div></section>
+
+<section class="section"><div class="container detail-layout">
+<article class="panel">
+<h2>Calculá tu precio</h2>
+<p class="muted">Ingresá tus datos y el precio se actualiza automáticamente.</p>
+
+<form id="calcForm" style="margin-top:1.2rem">
+  <div class="calc-grid">
+    <div class="field">
+      <label for="costo">Costo del producto/servicio (₡)</label>
+      <input type="number" id="costo" min="0" step="0.01" placeholder="Ej: 5000" required>
+    </div>
+    <div class="field">
+      <label for="gastos">Gastos adicionales por unidad (₡)</label>
+      <small>Empaque, envío, comisiones, etc. (opcional)</small>
+      <input type="number" id="gastos" min="0" step="0.01" placeholder="Ej: 500" value="0">
+    </div>
+    <div class="field">
+      <label for="margen">Margen de ganancia deseado (%)</label>
+      <small>Sobre el precio de venta, no sobre el costo</small>
+      <input type="number" id="margen" min="0" max="99" step="0.1" placeholder="Ej: 30" required>
+    </div>
+    <div class="field">
+      <label for="tipoIva">Tipo de IVA (Costa Rica)</label>
+      <select id="tipoIva">
+        <option value="13">13% — Tarifa general</option>
+        <option value="4">4% — Servicios de salud privados, seguros</option>
+        <option value="2">2% — Medicamentos, servicios educativos privados</option>
+        <option value="1">1% — Canasta básica tributaria</option>
+        <option value="0">0% — Exento</option>
+        <option value="custom">Personalizado</option>
+      </select>
+    </div>
+  </div>
+  <div class="field" id="customIvaField" style="display:none;max-width:240px">
+    <label for="ivaCustom">Porcentaje de IVA personalizado (%)</label>
+    <input type="number" id="ivaCustom" min="0" max="100" step="0.1" placeholder="Ej: 8">
+  </div>
+</form>
+
+<div class="warn-msg" id="warnMsg">⚠️ El margen debe ser menor a 100% (no se puede calcular).</div>
+
+<div class="results" id="results">
+  <div class="result-row"><span>Costo total (costo + gastos)</span><span id="rCostoTotal">₡0</span></div>
+  <div class="result-row"><span>Precio de venta sin IVA</span><span id="rPrecioSinIva">₡0</span></div>
+  <div class="result-row"><span>Ganancia</span><span id="rGanancia">₡0</span></div>
+  <div class="result-row"><span>Monto de IVA</span><span id="rMontoIva">₡0</span></div>
+  <div class="result-row highlight"><span>Precio final al cliente</span><span id="rPrecioFinal">₡0</span></div>
+  <div class="result-row"><span>ROI (ganancia sobre costo)</span><span id="rRoi">0%</span></div>
+</div>
+</article>
+
+<aside class="panel">
+<h2>¿Cómo se calcula?</h2>
+<ul class="list">
+<li>Costo total = costo + gastos adicionales</li>
+<li>Precio sin IVA = costo total ÷ (1 − margen%)</li>
+<li>Ganancia = precio sin IVA − costo total</li>
+<li>IVA = precio sin IVA × tarifa IVA</li>
+<li>Precio final = precio sin IVA + IVA</li>
+</ul>
+<div class="notice" style="margin-top:1.2rem">Las tarifas de IVA son las vigentes en Costa Rica según tipo de bien o servicio. Si tenés dudas sobre cuál te aplica, consultá con tu contador.</div>
+</aside>
+</div></section>
+</main>
+<footer class="footer"><div class="container footer-grid"><strong>AXENTRAL</strong><span>Calculadora de precios e IVA</span><a href="/contacto/">Contacto</a></div></footer>
+<script src="/assets/js/main.js"></script>
+<script>
+(function(){
+  const $ = (id) => document.getElementById(id);
+  const fmt = new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC', maximumFractionDigits: 2 });
+
+  const tipoIva = $('tipoIva');
+  const customField = $('customIvaField');
+  const ivaCustom = $('ivaCustom');
+  const warnMsg = $('warnMsg');
+  const resultsBox = $('results');
+
+  function getIva() {
+    if (tipoIva.value === 'custom') {
+      return parseFloat(ivaCustom.value) || 0;
+    }
+    return parseFloat(tipoIva.value);
+  }
+
+  function calcular() {
+    const costo = parseFloat($('costo').value) || 0;
+    const gastos = parseFloat($('gastos').value) || 0;
+    const margen = parseFloat($('margen').value) || 0;
+    const iva = getIva();
+
+    const costoTotal = costo + gastos;
+
+    if (margen >= 100) {
+      warnMsg.style.display = 'block';
+      resultsBox.style.opacity = '0.4';
+      return;
+    }
+    warnMsg.style.display = 'none';
+    resultsBox.style.opacity = '1';
+
+    const precioSinIva = costoTotal / (1 - margen / 100);
+    const ganancia = precioSinIva - costoTotal;
+    const montoIva = precioSinIva * (iva / 100);
+    const precioFinal = precioSinIva + montoIva;
+    const roi = costoTotal > 0 ? (ganancia / costoTotal) * 100 : 0;
+
+    $('rCostoTotal').textContent = fmt.format(costoTotal);
+    $('rPrecioSinIva').textContent = fmt.format(precioSinIva);
+    $('rGanancia').textContent = fmt.format(ganancia);
+    $('rMontoIva').textContent = fmt.format(montoIva);
+    $('rPrecioFinal').textContent = fmt.format(precioFinal);
+    $('rRoi').textContent = roi.toFixed(1) + '%';
+  }
+
+  tipoIva.addEventListener('change', () => {
+    customField.style.display = tipoIva.value === 'custom' ? 'flex' : 'none';
+    calcular();
+  });
+
+  document.getElementById('calcForm').addEventListener('input', calcular);
+
+  calcular();
+})();
+</script>
+</body></html>
