@@ -13,6 +13,10 @@
 .result-row span:last-child{font-weight:800;font-size:1.05rem}
 .result-row.highlight span:last-child{color:var(--neon);font-size:1.4rem}
 .warn-msg{color:var(--danger);font-size:.85rem;margin-top:.5rem;display:none}
+.hint{cursor:help;color:var(--muted);border:1px solid var(--border);border-radius:999px;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;margin-left:.35rem}
+.save-row{display:flex;align-items:center;gap:.8rem;margin-top:1rem;flex-wrap:wrap}
+.upsell-box{display:none;background:var(--surface-2);border:1px solid color-mix(in srgb,var(--neon) 45%,var(--border));border-radius:14px;padding:1rem;margin-top:1rem;gap:.8rem;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.upsell-box.show{display:flex}
 @media(max-width:640px){.calc-grid{grid-template-columns:1fr}}
 </style>
 </head><body><header class="site-header"><div class="container nav"><a class="logo" href="/">AX<span>ENTRAL</span></a><ul class="nav-links"><li><a href="/">Inicio</a></li><li><a class="active" href="/servicios-y-apps/">Servicios y Apps</a></li><li><a href="/conta-ai/">Conta AI</a></li><li><a href="/portal/">Portal</a></li><li><a href="/contacto/">Contacto</a></li></ul><div class="nav-actions"><button class="theme-toggle" data-theme-toggle>☀️ Modo claro</button><a class="btn btn-secondary" href="/portal/">Iniciar sesión</a></div></div></header><main><section class="page-title"><div class="container"><span class="status available">Disponible</span><div class="eyebrow">Servicios y Apps</div><h1>🧮 Calculadora de precios e IVA</h1><p>Calcula costo, margen, ganancia, IVA y precio recomendado para vender con claridad.</p></div></section>
@@ -23,6 +27,11 @@
 <p class="muted">Ingresá tus datos y el precio se actualiza automáticamente.</p>
 
 <form id="calcForm" style="margin-top:1.2rem">
+  <div class="field">
+    <label for="nombreCalc">Nombre del cálculo</label>
+    <small>Para identificarlo después. Ej: "Estuches Honor"</small>
+    <input type="text" id="nombreCalc" placeholder="Ej: Estuches Honor" maxlength="60">
+  </div>
   <div class="calc-grid">
     <div class="field">
       <label for="costo">Costo del producto/servicio (₡)</label>
@@ -64,7 +73,16 @@
   <div class="result-row"><span>Ganancia</span><span id="rGanancia">₡0</span></div>
   <div class="result-row"><span>Monto de IVA</span><span id="rMontoIva">₡0</span></div>
   <div class="result-row highlight"><span>Precio final al cliente</span><span id="rPrecioFinal">₡0</span></div>
-  <div class="result-row"><span>ROI (ganancia sobre costo)</span><span id="rRoi">0%</span></div>
+  <div class="result-row"><span>ROI (retorno sobre costo)<span class="hint" title="ROI = (ganancia ÷ costo total) × 100. Indica cuántos colones ganás por cada colón que invertiste en el producto. Un ROI de 42.9% significa que por cada ₡100 invertidos, ganás ₡42.90 extra.">ⓘ</span></span><span id="rRoi">0%</span></div>
+</div>
+
+<div class="save-row">
+  <button type="button" class="btn btn-secondary" id="btnGuardar">💾 Guardar en tu historial</button>
+</div>
+
+<div class="upsell-box" id="upsellBox">
+  <div><strong>🔒 Guardar historial es una función de tu cuenta Axentral.</strong><div class="muted" style="margin-top:.3rem">Creá una cuenta gratis para guardar "<span id="upsellNombre">este cálculo</span>" y consultarlo cuando quieras.</div></div>
+  <a class="btn btn-primary" href="/portal/">Crear cuenta gratis</a>
 </div>
 </article>
 
@@ -76,9 +94,26 @@
 <li>Ganancia = precio sin IVA − costo total</li>
 <li>IVA = precio sin IVA × tarifa IVA</li>
 <li>Precio final = precio sin IVA + IVA</li>
+<li>ROI = (ganancia ÷ costo total) × 100</li>
 </ul>
 <div class="notice" style="margin-top:1.2rem">Las tarifas de IVA son las vigentes en Costa Rica según tipo de bien o servicio. Si tenés dudas sobre cuál te aplica, consultá con tu contador.</div>
 </aside>
+</div></section>
+
+<section class="section" style="padding-top:0"><div class="container">
+<div class="card premium-card">
+<span class="status soon">🔒 Función premium — próximamente</span>
+<h3 style="margin-top:.8rem">Historial de cálculos y reportes en PDF</h3>
+<p class="muted">Con tu cuenta Axentral vas a poder hacer más que un cálculo suelto:</p>
+<ul class="list" style="margin-top:.8rem">
+<li>Ponerle nombre a cada cálculo (ej: "Estuches Honor", "Fundas iPhone")</li>
+<li>Guardar todos tus cálculos en una lista para verlos después</li>
+<li>Descargar el historial completo en PDF, especificando el tipo de impuesto para cada producto</li>
+</ul>
+<div class="card-actions">
+<a class="btn btn-primary" href="/portal/">Crear cuenta gratis</a>
+</div>
+</div>
 </div></section>
 </main>
 <footer class="footer"><div class="container footer-grid"><strong>AXENTRAL</strong><span>Calculadora de precios e IVA</span><a href="/contacto/">Contacto</a></div></footer>
@@ -137,6 +172,14 @@
   });
 
   document.getElementById('calcForm').addEventListener('input', calcular);
+
+  document.getElementById('btnGuardar').addEventListener('click', () => {
+    const nombre = $('nombreCalc').value.trim();
+    $('upsellNombre').textContent = nombre ? `"${nombre}"` : 'este cálculo';
+    const box = $('upsellBox');
+    box.classList.add('show');
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
 
   calcular();
 })();
