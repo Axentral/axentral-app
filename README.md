@@ -36,6 +36,12 @@ axentral-app/
             └── supabase-keep-alive.js
 ```
 
+## Documentación del proyecto
+
+- `docs/decisiones-producto.md`: decisiones de producto, navegación y estructura.
+- `docs/axentral-proyecto.md`: documento general editable del proyecto.
+- `docs/axentral-proyecto.rtf`: versión compatible con Word en formato de texto no binario.
+
 ## Despliegue
 
 Netlify publica el sitio desde la raíz del repositorio y carga las funciones desde `netlify/functions`.
