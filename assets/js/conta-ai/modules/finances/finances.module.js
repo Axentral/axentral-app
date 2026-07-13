@@ -1,5 +1,5 @@
 import { renderDashboardView } from './views/dashboard.view.js';
-import { renderCompanySettings } from './company-settings/company-settings.controller.js';
+import { renderConfiguracionView } from './views/configuracion.view.js';
 import { renderCatalogosView } from './views/catalogos.view.js';
 import { renderMovimientosView } from './views/movimientos.view.js';
 import { renderFlujoCajaView } from './views/flujo-caja.view.js';
@@ -10,6 +10,7 @@ import { renderReporteIaView } from './views/reporte-ia.view.js';
 
 const views = {
   dashboard: renderDashboardView,
+  configuracion: renderConfiguracionView,
   catalogos: renderCatalogosView,
   movimientos: renderMovimientosView,
   'flujo-caja': renderFlujoCajaView,
@@ -20,11 +21,6 @@ const views = {
 };
 
 export function renderFinanceView(region, hash) {
-  if (hash === 'configuracion') {
-    renderCompanySettings(region);
-    return;
-  }
-
   const render = views[hash];
 
   if (!render) {

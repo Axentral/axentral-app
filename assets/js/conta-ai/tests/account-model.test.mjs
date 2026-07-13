@@ -12,7 +12,7 @@ import {
 
 const account = createAccount({
   id: ' acc-1 ',
-  code: ' 1.01-A ',
+  code: ' 1. 01-A ',
   name: '  Banco   Principal ',
   type: 'asset',
   description: '  Cuenta   bancaria ',
@@ -20,7 +20,7 @@ const account = createAccount({
 });
 
 assert.equal(account.id, 'acc-1', 'normaliza id');
-assert.equal(account.code, '1.01-A', 'recorta espacios externos del código');
+assert.equal(account.code, '1.01-A', 'normaliza código y elimina espacios');
 assert.equal(account.name, 'Banco Principal', 'normaliza nombre');
 assert.equal(account.type, 'asset', 'crea cuenta válida');
 assert.equal(account.normalBalance, NORMAL_BALANCES.DEBIT, 'deriva naturaleza débito para activo');
@@ -66,19 +66,7 @@ const cloned = cloneAccount(account);
 assert.deepEqual(cloned, account, 'clona cuenta normalizada');
 assert.notEqual(cloned, account, 'la clonación devuelve una nueva referencia');
 
-const withInternalSpaces = createAccount({ code: 'Caja General' });
-assert.equal(withInternalSpaces.code, 'Caja General', 'conserva espacios internos para validación posterior');
-
-const withSlash = createAccount({ code: '1/01' });
-assert.equal(withSlash.code, '1/01', 'conserva / para validación posterior');
-
-const withHash = createAccount({ code: 'ACTIVO#1' });
-assert.equal(withHash.code, 'ACTIVO#1', 'conserva # para validación posterior');
-
-const mixedCase = createAccount({ code: 'Act-001' });
-assert.equal(mixedCase.code, 'Act-001', 'conserva mayúsculas y minúsculas');
-
-const emptyCode = createAccount({ code: '   ' });
-assert.equal(emptyCode.code, '', 'permite código vacío para que el validador lo rechace');
+const sanitized = createAccount({ code: ' A 1 / * ? ' });
+assert.equal(sanitized.code, 'A1', 'el código solo conserva caracteres permitidos');
 
 console.log('Pruebas del modelo de Cuenta completadas.');

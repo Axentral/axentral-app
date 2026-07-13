@@ -9,7 +9,9 @@ if (!root) {
 }
 
 renderShell(root);
-window.AxentralTheme?.init(root);
+import('/assets/js/main.js').catch((error) => {
+  console.error('[ContaAI Finanzas] No se pudo inicializar el control de tema del shell.', error);
+});
 
 const region = getViewRegion(root);
 

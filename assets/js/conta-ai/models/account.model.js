@@ -28,6 +28,8 @@ const TYPE_NORMAL_BALANCE = Object.freeze({
   income: NORMAL_BALANCES.CREDIT
 });
 
+const ACCOUNT_CODE_PATTERN = /[^A-Za-z0-9._-]/g;
+
 export function createAccount(input = {}, options = {}) {
   return normalizeAccount({ ...DEFAULT_ACCOUNT, ...input }, options);
 }
@@ -68,7 +70,7 @@ export function cloneAccount(account) {
 }
 
 function normalizeAccountCode(value) {
-  return String(value ?? '').trim();
+  return normalizeText(value).replace(/\s+/g, '').replace(ACCOUNT_CODE_PATTERN, '');
 }
 
 function normalizeOptionalText(value) {
