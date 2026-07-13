@@ -8,11 +8,9 @@ El objetivo del MVP es construir un núcleo financiero sólido, desacoplado de l
 
 Durante el MVP no se implementarán funcionalidades específicas de un país.
 
-Después de esta consolidación, este documento queda como referencia oficial del MVP. Durante el MVP solo podrá actualizarse el estado de las fases del roadmap: completada, en progreso o pendiente. La arquitectura y el alcance no deberán modificarse salvo decisión explícita del proyecto.
-
 ---
 
-## Principios
+# Principios
 
 Todo el desarrollo deberá respetar:
 
@@ -28,9 +26,8 @@ Todo el desarrollo deberá respetar:
 
 ---
 
-## Arquitectura oficial
+# Arquitectura oficial
 
-```text
 ContaAI
 
 ├── Finanzas
@@ -38,36 +35,32 @@ ContaAI
 ├── Compras
 ├── Inventario
 ├── Nómina
-└── IA
-```
+├── IA
+└── Administración
 
 Esta estructura NO debe modificarse durante el MVP.
 
-Las funciones administrativas del sistema, como usuarios, roles, permisos, auditoría o configuración técnica, deberán tratarse como infraestructura y no como un módulo funcional de negocio.
-
 ---
 
-## Contenido de cada módulo
+# Contenido de cada módulo
 
-### Finanzas
+## Finanzas
 
 Responsabilidad:
 
 Administrar toda la información financiera y contable.
 
-```text
-Finanzas
+Contiene:
 
-├── Configuración
-├── Plan de cuentas
-├── Catálogos
-├── Movimientos / Diario
-├── Bancos y Caja
-├── Presupuesto
-├── Estados Financieros
-├── Indicadores
-└── Dashboard
-```
+* Configuración
+* Plan de cuentas
+* Catálogos
+* Movimientos / Diario
+* Bancos y Caja
+* Presupuesto
+* Estados Financieros
+* Indicadores
+* Dashboard
 
 No contiene:
 
@@ -79,7 +72,7 @@ No contiene:
 
 ---
 
-### Ventas
+## Ventas
 
 Contendrá en versiones posteriores:
 
@@ -89,26 +82,26 @@ Contendrá en versiones posteriores:
 * Cuentas por cobrar
 * Reportes
 
-Forma parte de la arquitectura oficial, pero no forma parte del alcance del MVP actual.
+No forma parte del MVP.
 
 ---
 
-### Compras
+## Compras
 
-Contendrá en versiones posteriores:
+Contendrá:
 
 * Proveedores
 * Órdenes de compra
 * Compras
 * Cuentas por pagar
 
-Forma parte de la arquitectura oficial, pero no forma parte del alcance del MVP actual.
+No forma parte del MVP.
 
 ---
 
-### Inventario
+## Inventario
 
-Contendrá en versiones posteriores:
+Contendrá:
 
 * Productos
 * Entradas
@@ -116,24 +109,24 @@ Contendrá en versiones posteriores:
 * Kardex
 * Existencias
 
-Forma parte de la arquitectura oficial, pero no forma parte del alcance del MVP actual.
+No forma parte del MVP.
 
 ---
 
-### Nómina
+## Nómina
 
-Contendrá en versiones posteriores:
+Contendrá:
 
 * Empleados
 * Planillas
 * Deducciones
 * Beneficios
 
-Forma parte de la arquitectura oficial, pero no forma parte del alcance del MVP actual.
+No forma parte del MVP.
 
 ---
 
-### IA
+## IA
 
 Responsabilidad:
 
@@ -152,49 +145,136 @@ Siempre utilizará información calculada por el sistema.
 
 ---
 
-## Roadmap oficial del MVP
+# Roadmap oficial del MVP
 
-- [x] Fase 0 — Arquitectura
-- [x] Fase 1 — Shell
-- [x] Fase 2 — Configuración
-- [ ] Fase 3 — Plan de cuentas
-- [ ] Fase 4 — Catálogos
-- [ ] Fase 5 — Movimientos / Diario
-- [ ] Fase 6 — Bancos y Caja
-- [ ] Fase 7 — Presupuesto
-- [ ] Fase 8 — Estados Financieros
-- [ ] Fase 9 — Indicadores
-- [ ] Fase 10 — Dashboard
-- [ ] Fase 11 — IA
+Fase 0
+
+Arquitectura
+
+Estado:
+
+Completada.
 
 ---
 
-## Dependencias del Roadmap
+Fase 1
 
-Las dependencias oficiales del MVP son:
+Shell de ContaAI
 
-```text
+Estado:
+
+Completada.
+
+---
+
+Fase 2
+
 Configuración
 
-↓
+Estado:
+
+Completada.
+
+---
+
+Fase 3
+
+Plan de cuentas
+
+Pendiente.
+
+---
+
+Fase 4
+
+Catálogos
+
+Pendiente.
+
+---
+
+Fase 5
+
+Movimientos / Diario
+
+Pendiente.
+
+---
+
+Fase 6
+
+Bancos y Caja
+
+Pendiente.
+
+---
+
+Fase 7
+
+Presupuesto
+
+Pendiente.
+
+---
+
+Fase 8
+
+Estados Financieros
+
+Pendiente.
+
+---
+
+Fase 9
+
+Indicadores
+
+Pendiente.
+
+---
+
+Fase 10
+
+Dashboard
+
+Pendiente.
+
+---
+
+Fase 11
+
+IA
+
+Pendiente.
+
+---
+
+# Versión 2
+
+No desarrollar durante el MVP:
+
+* Ventas
+* Compras
+* Inventario
+* Nómina
+
+---
+
+# Reglas de dependencia
+
+Los módulos solo pueden depender de módulos anteriores.
+
+Ejemplo:
 
 Plan de cuentas
 
 ↓
 
-Catálogos
-
-↓
-
-Movimientos / Diario
+Movimientos
 
 ↓
 
 Bancos y Caja
-
-↓
-
-Presupuesto
 
 ↓
 
@@ -211,40 +291,20 @@ Dashboard
 ↓
 
 IA
-```
 
-Reglas:
+Nunca al contrario.
 
-* Un módulo solo puede depender de módulos anteriores.
-* No se permiten dependencias circulares.
-* Ninguna fase puede comenzar mientras la anterior no esté aprobada.
-* No se desarrollarán dos fases del roadmap simultáneamente.
+No deben existir dependencias circulares.
 
 ---
 
-## Versión 2
+# Reglas del MVP
 
-No desarrollar durante el MVP:
+Durante el MVP NO se deben agregar:
 
-* Ventas
-* Compras
-* Inventario
-* Nómina
-
-Estos módulos forman parte de la arquitectura oficial, pero su implementación comenzará únicamente después de finalizar el roadmap completo del módulo Finanzas.
-
----
-
-## Reglas del MVP
-
-Durante el MVP, Ventas, Compras, Inventario y Nómina deben entenderse de la siguiente forma:
-
-* Forman parte de la arquitectura oficial.
-* No forman parte del alcance del MVP actual.
-* Su implementación comenzará únicamente después de finalizar el roadmap completo del módulo Finanzas.
-
-Durante el MVP se mantienen fuera de alcance:
-
+* Nuevos módulos.
+* Nuevas entidades.
+* Funcionalidades fuera del roadmap.
 * Reglas fiscales específicas.
 * Impuestos.
 * IVA.
@@ -253,15 +313,17 @@ Durante el MVP se mantienen fuera de alcance:
 * Multiusuario.
 * Activos fijos.
 * Conciliación bancaria avanzada.
-* CRM.
-* POS.
-* Integraciones bancarias.
-* XML fiscal.
-* Otras funcionalidades no incluidas en el roadmap.
+* Nómina.
+* Facturación.
+* Inventario.
+* Compras.
+* Ventas.
+
+Todo eso pertenece a versiones futuras.
 
 ---
 
-## Regla de implementación
+# Regla de implementación
 
 Cada fase debe cumplir las siguientes condiciones:
 
@@ -275,40 +337,7 @@ Cada fase debe cumplir las siguientes condiciones:
 
 ---
 
-## Definition of Done
-
-Toda fase deberá cumplir como mínimo:
-
-* Compila correctamente.
-* No rompe módulos anteriores.
-* Tiene validaciones.
-* Tiene pruebas para la lógica implementada.
-* Está integrada al Shell.
-* Respeta el roadmap.
-* Respeta la arquitectura.
-* No introduce dependencias innecesarias.
-* No introduce entidades nuevas fuera del alcance de la fase.
-* La documentación correspondiente está actualizada.
-* Fue revisada y aprobada antes de iniciar la siguiente fase.
-
----
-
-## Principio de Alcance
-
-Cada fase implementará únicamente la funcionalidad necesaria para cumplir el objetivo de esa fase.
-
-Si durante el desarrollo surge una mejora que no sea indispensable para completar la fase actual:
-
-* No deberá implementarse.
-* No deberá modificar la arquitectura.
-* No deberá modificar el roadmap.
-* Deberá registrarse únicamente en el Backlog.
-
-El objetivo es evitar el crecimiento descontrolado del alcance (scope creep).
-
----
-
-## Backlog
+# Backlog
 
 Si durante cualquier implementación surge una mejora:
 
@@ -328,22 +357,19 @@ Incluyendo:
 
 Nada más.
 
-El Backlog nunca modifica la fase actual.
-
-El Backlog nunca modifica la arquitectura.
-
-El Backlog nunca modifica el roadmap.
-
 ---
 
-## Uso obligatorio
+# Uso obligatorio
 
 A partir de este documento, todas las implementaciones futuras deberán respetar este roadmap.
-
-Toda implementación futura deberá comenzar revisando este documento.
 
 Antes de iniciar una nueva fase deberá verificarse que la implementación pertenece al roadmap oficial.
 
 Si una tarea no pertenece al roadmap, no debe implementarse durante el MVP.
 
-Ningún prompt posterior podrá modificar el roadmap o la arquitectura salvo una decisión explícita del proyecto.
+---
+
+## Observaciones
+
+* La arquitectura oficial indicada en este documento agrega los módulos Nómina y Administración respecto a definiciones previas de ContaAI que solo contemplaban Finanzas, Ventas, Compras, Inventario e IA. No se modifica el roadmap solicitado; esta diferencia queda registrada como observación.
+* El apartado Versión 2 enumera Ventas, Compras, Inventario y Nómina como módulos fuera del MVP, pero no menciona Administración. Se conserva el contenido funcional solicitado y se registra esta omisión para revisión futura.
