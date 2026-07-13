@@ -25,6 +25,7 @@
 <article class="panel">
 <h2>Calculá tu precio</h2>
 <p class="muted">Ingresá tus datos y el precio se actualiza automáticamente.</p>
+<div class="notice" id="sesionBanner" style="display:none;margin-top:.8rem;font-size:.85rem"></div>
 
 <form id="calcForm" style="margin-top:1.2rem">
   <div class="field">
@@ -117,6 +118,8 @@
 </div></section>
 </main>
 <footer class="footer"><div class="container footer-grid"><strong>AXENTRAL</strong><span>Calculadora de precios e IVA</span><a href="/contacto/">Contacto</a></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/assets/js/supabase-client.js"></script>
 <script src="/assets/js/main.js"></script>
 <script>
 (function(){
@@ -128,6 +131,7 @@
   const ivaCustom = $('ivaCustom');
   const warnMsg = $('warnMsg');
   const resultsBox = $('results');
+  let ultimoCalculo = null;
 
   function getIva() {
     if (tipoIva.value === 'custom') {
@@ -147,6 +151,7 @@
     if (margen >= 100) {
       warnMsg.style.display = 'block';
       resultsBox.style.opacity = '0.4';
+      ultimoCalculo = null;
       return;
     }
     warnMsg.style.display = 'none';
@@ -157,6 +162,16 @@
     const montoIva = precioSinIva * (iva / 100);
     const precioFinal = precioSinIva + montoIva;
     const roi = costoTotal > 0 ? (ganancia / costoTotal) * 100 : 0;
+
+    ultimoCalculo = {
+      costo, gastos, margen,
+      tipo_iva: tipoIva.value,
+      iva_porcentaje: iva,
+      costo_total: costoTotal,
+      precio_sin_iva: precioSinIva,
+      ganancia, monto_iva: montoIva,
+      precio_final: precioFinal, roi
+    };
 
     $('rCostoTotal').textContent = fmt.format(costoTotal);
     $('rPrecioSinIva').textContent = fmt.format(precioSinIva);
@@ -173,15 +188,61 @@
 
   document.getElementById('calcForm').addEventListener('input', calcular);
 
-  document.getElementById('btnGuardar').addEventListener('click', () => {
+  document.getElementById('btnGuardar').addEventListener('click', async () => {
     const nombre = $('nombreCalc').value.trim();
-    $('upsellNombre').textContent = nombre ? `"${nombre}"` : 'este cálculo';
-    const box = $('upsellBox');
-    box.classList.add('show');
-    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const btn = document.getElementById('btnGuardar');
+
+    if (!ultimoCalculo) {
+      alert('Completá los campos del cálculo antes de guardar.');
+      return;
+    }
+    if (!nombre) {
+      $('nombreCalc').focus();
+      alert('Ponele un nombre a tu cálculo para poder identificarlo después (ej: "Estuches Honor").');
+      return;
+    }
+
+    const session = await window.axGetSession();
+
+    if (!session) {
+      $('upsellNombre').textContent = `"${nombre}"`;
+      const box = $('upsellBox');
+      box.classList.add('show');
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    const { error } = await window.supabaseClient.from('calculos').insert({
+      user_id: session.user.id,
+      nombre,
+      ...ultimoCalculo
+    });
+
+    btn.disabled = false;
+
+    if (error) {
+      btn.textContent = '💾 Guardar en tu historial';
+      alert('No se pudo guardar: ' + error.message);
+      return;
+    }
+
+    btn.textContent = '✅ Guardado';
+    setTimeout(() => { btn.textContent = '💾 Guardar en tu historial'; }, 2000);
   });
 
   calcular();
+
+  (async () => {
+    const session = await window.axGetSession();
+    if (session) {
+      const banner = $('sesionBanner');
+      banner.style.display = 'block';
+      banner.innerHTML = `Sesión iniciada como <strong>${session.user.email}</strong> — <a href="/portal/" style="color:var(--neon)">ver mi historial</a>`;
+    }
+  })();
 })();
 </script>
 </body></html>
