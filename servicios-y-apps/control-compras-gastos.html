@@ -1,1 +1,362 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Control de compras y gastos de Axentral."><title>Control de compras y gastos — Axentral</title><link rel="stylesheet" href="/assets/css/styles.css"></head><body><header class="site-header"><div class="container nav"><a class="logo" href="/">AX<span>ENTRAL</span></a><ul class="nav-links"><li><a href="/">Inicio</a></li><li><a class="active" href="/servicios-y-apps/">Servicios y Apps</a></li><li><a href="/conta-ai/">Conta AI</a></li><li><a href="/portal/">Portal</a></li><li><a href="/contacto/">Contacto</a></li></ul><div class="nav-actions"><button class="theme-toggle" data-theme-toggle>☀️ Modo claro</button><a class="btn btn-secondary" href="/portal/">Iniciar sesión</a></div></div></header><main><section class="page-title"><div class="container"><span class="status progress">En desarrollo</span><div class="eyebrow">Servicios y Apps</div><h1>💰 Control de compras y gastos</h1><p>Organiza compras y gastos personales o de PyME con categorías, reportes y seguimiento mensual.</p><div class="hero-actions"><a class="btn btn-primary" href="/portal/">Crear cuenta para comprar</a><a class="btn btn-secondary" href="/servicios-y-apps/">Volver al catálogo</a></div></div></section><section class="section"><div class="container detail-layout"><article class="panel"><h2>Para qué sirve</h2><p class="muted">Entender en qué se gasta, cuánto se compra y cómo evoluciona el flujo de dinero.</p><h2 style="margin-top:1.4rem">Cómo se manejará</h2><ul class="list"><li>Registrar compras y gastos.</li><li>Clasificar por categoría.</li><li>Separar uso personal o PyME.</li><li>Ver resúmenes y reportes mensuales.</li></ul><div class="video-placeholder">Video explicativo próximamente</div></article><aside class="panel"><h2>Compra y acceso</h2><p class="muted">Cuando esté disponible, la compra se realizará desde el Portal para proteger los datos del cliente y asociar productos, facturas y pagos a su cuenta.</p><div class="price">Precio por definir</div><div class="card-actions"><a class="btn btn-primary" href="/portal/">Ir al portal</a><a class="btn btn-secondary" href="/contacto/">Consultar</a></div></aside></div></section></main><footer class="footer"><div class="container footer-grid"><strong>AXENTRAL</strong><span>Control de compras y gastos</span><a href="/contacto/">Contacto</a></div></footer><script src="/assets/js/main.js"></script></body></html>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Control de compras y gastos de Axentral."><title>Control de compras y gastos — Axentral</title><link rel="stylesheet" href="/assets/css/styles.css">
+<style>
+.locked-panel{max-width:480px;margin:0 auto;text-align:center}
+.field{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+.field label{font-size:.85rem;font-weight:700;color:var(--text)}
+.field input,.field select,.field textarea{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:.7rem .85rem;font-size:1rem;font-family:inherit}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--neon)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+.summary-card{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:1rem}
+.summary-card .label{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+.summary-card .value{font-size:1.4rem;font-weight:800;margin-top:.3rem}
+.cat-bar-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;font-size:.85rem}
+.cat-bar-row .cat-name{width:130px;flex-shrink:0;color:var(--muted)}
+.cat-bar-track{flex:1;background:var(--surface-2);border-radius:999px;height:10px;overflow:hidden}
+.cat-bar-fill{height:100%;background:var(--neon);border-radius:999px}
+.cat-bar-amount{width:90px;text-align:right;flex-shrink:0}
+.filters{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1rem}
+.filters select{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:.5rem .8rem;font-size:.88rem}
+table.hist{width:100%;border-collapse:collapse;margin-top:.5rem}
+table.hist th{text-align:left;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;padding:.55rem .5rem;border-bottom:1px solid var(--border)}
+table.hist td{padding:.65rem .5rem;border-bottom:1px solid var(--border);font-size:.88rem}
+table.hist tr:last-child td{border-bottom:none}
+.tag{display:inline-block;padding:.15rem .55rem;border-radius:999px;font-size:.72rem;font-weight:700}
+.tag.compra{background:#3b82f61a;color:#60a5fa}
+.tag.gasto{background:#fb71851a;color:#f87171}
+.btn-del{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.82rem}
+.btn-del:hover{text-decoration:underline}
+.empty-state{color:var(--muted);text-align:center;padding:2rem 0}
+#appArea{display:none}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr}table.hist{font-size:.8rem}table.hist th:nth-child(4),table.hist td:nth-child(4){display:none}}
+</style>
+</head><body><header class="site-header"><div class="container nav"><a class="logo" href="/">AX<span>ENTRAL</span></a><ul class="nav-links"><li><a href="/">Inicio</a></li><li><a class="active" href="/servicios-y-apps/">Servicios y Apps</a></li><li><a href="/conta-ai/">Conta AI</a></li><li><a href="/portal/">Portal</a></li><li><a href="/contacto/">Contacto</a></li></ul><div class="nav-actions"><button class="theme-toggle" data-theme-toggle>☀️ Modo claro</button><a class="btn btn-secondary" href="/portal/">Iniciar sesión</a></div></div></header>
+
+<main><section class="page-title"><div class="container"><span class="status available">Disponible</span><div class="eyebrow">Servicios y Apps</div><h1>💰 Control de compras y gastos</h1><p>Registrá tus compras y gastos, personales o de tu PyME, y mirá en qué se te va la plata cada mes.</p></div></section>
+
+<section class="section"><div class="container">
+
+<div class="panel locked-panel" id="lockedPanel">
+  <h2>Iniciá sesión para usar esta herramienta</h2>
+  <p class="muted" style="margin-top:.5rem">Tus compras y gastos se guardan en tu cuenta privada de Axentral — nadie más los puede ver.</p>
+  <a class="btn btn-primary" href="/portal/" style="margin-top:1.2rem">Ir al portal</a>
+</div>
+
+<div id="appArea">
+
+<div class="panel" style="margin-bottom:1.5rem">
+  <h2>Registrar compra o gasto</h2>
+  <form id="regForm" style="margin-top:1rem">
+    <div class="form-grid">
+      <div class="field"><label for="fFecha">Fecha</label><input type="date" id="fFecha" required></div>
+      <div class="field"><label for="fMonto">Monto (₡)</label><input type="number" id="fMonto" min="0" step="0.01" placeholder="Ej: 15000" required></div>
+    </div>
+    <div class="field"><label for="fDescripcion">Descripción</label><input type="text" id="fDescripcion" placeholder="Ej: Compra de estuches al proveedor" maxlength="120" required></div>
+    <div class="form-grid">
+      <div class="field">
+        <label for="fCategoria">Categoría</label>
+        <select id="fCategoria">
+          <option>Inventario</option>
+          <option>Suministros y oficina</option>
+          <option>Marketing y publicidad</option>
+          <option>Servicios públicos</option>
+          <option>Transporte</option>
+          <option>Alimentación</option>
+          <option>Renta / alquiler</option>
+          <option>Salarios</option>
+          <option>Impuestos</option>
+          <option>Otros</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fTipo">Tipo</label>
+        <select id="fTipo">
+          <option value="compra">Compra</option>
+          <option value="gasto" selected>Gasto</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="fAmbito">Ámbito</label>
+      <select id="fAmbito">
+        <option value="personal">Personal</option>
+        <option value="pyme">PyME / negocio</option>
+      </select>
+    </div>
+    <div class="field"><label for="fNotas">Notas (opcional)</label><textarea id="fNotas" rows="2" maxlength="300"></textarea></div>
+    <button type="submit" class="btn btn-primary" id="btnAgregar">➕ Agregar registro</button>
+  </form>
+</div>
+
+<div class="panel" style="margin-bottom:1.5rem">
+  <h2>Resumen del mes</h2>
+  <div class="filters" style="margin-top:1rem">
+    <select id="filtroMes"></select>
+  </div>
+  <div class="summary-grid">
+    <div class="summary-card"><div class="label">Total del mes</div><div class="value" id="sumTotal">₡0</div></div>
+    <div class="summary-card"><div class="label">Personal</div><div class="value" id="sumPersonal">₡0</div></div>
+    <div class="summary-card"><div class="label">PyME</div><div class="value" id="sumPyme">₡0</div></div>
+    <div class="summary-card"><div class="label">Cantidad de registros</div><div class="value" id="sumCantidad">0</div></div>
+  </div>
+  <h3 style="margin-bottom:.8rem">Por categoría</h3>
+  <div id="catBreakdown"></div>
+  <div class="empty-state" id="sumEmpty" style="display:none">No hay registros este mes todavía.</div>
+</div>
+
+<div class="panel">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <h2>Todos tus registros</h2>
+    <button class="btn btn-secondary" id="btnDescargarPdf">📄 Descargar PDF del mes</button>
+  </div>
+  <div class="filters" style="margin-top:1rem">
+    <select id="filtroCategoria"><option value="">Todas las categorías</option></select>
+    <select id="filtroAmbito">
+      <option value="">Todos los ámbitos</option>
+      <option value="personal">Personal</option>
+      <option value="pyme">PyME</option>
+    </select>
+  </div>
+  <div id="tablaWrap">
+    <table class="hist">
+      <thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Ámbito</th><th>Tipo</th><th>Monto</th><th></th></tr></thead>
+      <tbody id="regBody"></tbody>
+    </table>
+  </div>
+  <div class="empty-state" id="regEmpty" style="display:none">Todavía no registraste ninguna compra o gasto.</div>
+</div>
+
+</div>
+</div>
+</section>
+</main>
+
+<footer class="footer"><div class="container footer-grid"><strong>AXENTRAL</strong><span>Control de compras y gastos</span><a href="/contacto/">Contacto</a></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/assets/js/supabase-client.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+<script src="/assets/js/main.js"></script>
+<script>
+(function(){
+  const $ = (id) => document.getElementById(id);
+  const fmt = new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC', maximumFractionDigits: 2 });
+  const fmtFecha = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('es-CR', { year: 'numeric', month: 'short', day: 'numeric' });
+
+  let userId = null;
+  let registros = [];
+
+  function mesLabel(ym) {
+    const [y, m] = ym.split('-');
+    const d = new Date(Number(y), Number(m) - 1, 1);
+    return d.toLocaleDateString('es-CR', { year: 'numeric', month: 'long' });
+  }
+
+  function hoyISO() {
+    const d = new Date();
+    return d.toISOString().slice(0, 10);
+  }
+
+  async function init() {
+    const session = await window.axGetSession();
+    if (!session) {
+      $('lockedPanel').style.display = 'block';
+      $('appArea').style.display = 'none';
+      return;
+    }
+    userId = session.user.id;
+    $('lockedPanel').style.display = 'none';
+    $('appArea').style.display = 'block';
+    $('fFecha').value = hoyISO();
+    await cargarRegistros();
+  }
+
+  async function cargarRegistros() {
+    const { data, error } = await window.supabaseClient
+      .from('gastos_compras')
+      .select('*')
+      .order('fecha', { ascending: false });
+
+    if (error) {
+      alert('No se pudieron cargar tus registros: ' + error.message);
+      return;
+    }
+    registros = data || [];
+    poblarFiltroMes();
+    poblarFiltroCategoria();
+    renderResumen();
+    renderTabla();
+  }
+
+  function poblarFiltroMes() {
+    const meses = [...new Set(registros.map(r => r.fecha.slice(0, 7)))].sort().reverse();
+    const mesActual = hoyISO().slice(0, 7);
+    if (!meses.includes(mesActual)) meses.unshift(mesActual);
+
+    const select = $('filtroMes');
+    const valorPrevio = select.value;
+    select.innerHTML = meses.map(m => `<option value="${m}">${mesLabel(m)}</option>`).join('');
+    select.value = meses.includes(valorPrevio) ? valorPrevio : mesActual;
+  }
+
+  function poblarFiltroCategoria() {
+    const cats = [...new Set(registros.map(r => r.categoria))].sort();
+    const select = $('filtroCategoria');
+    const valorPrevio = select.value;
+    select.innerHTML = '<option value="">Todas las categorías</option>' + cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    select.value = valorPrevio;
+  }
+
+  function renderResumen() {
+    const mes = $('filtroMes').value;
+    const delMes = registros.filter(r => r.fecha.slice(0, 7) === mes);
+
+    const total = delMes.reduce((s, r) => s + Number(r.monto), 0);
+    const personal = delMes.filter(r => r.ambito === 'personal').reduce((s, r) => s + Number(r.monto), 0);
+    const pyme = delMes.filter(r => r.ambito === 'pyme').reduce((s, r) => s + Number(r.monto), 0);
+
+    $('sumTotal').textContent = fmt.format(total);
+    $('sumPersonal').textContent = fmt.format(personal);
+    $('sumPyme').textContent = fmt.format(pyme);
+    $('sumCantidad').textContent = delMes.length;
+
+    const porCategoria = {};
+    delMes.forEach(r => { porCategoria[r.categoria] = (porCategoria[r.categoria] || 0) + Number(r.monto); });
+    const ordenado = Object.entries(porCategoria).sort((a, b) => b[1] - a[1]);
+
+    const cont = $('catBreakdown');
+    if (ordenado.length === 0) {
+      cont.innerHTML = '';
+      $('sumEmpty').style.display = 'block';
+    } else {
+      $('sumEmpty').style.display = 'none';
+      const max = ordenado[0][1];
+      cont.innerHTML = ordenado.map(([cat, monto]) => `
+        <div class="cat-bar-row">
+          <span class="cat-name">${escapeHtml(cat)}</span>
+          <span class="cat-bar-track"><span class="cat-bar-fill" style="width:${(monto / max * 100).toFixed(0)}%"></span></span>
+          <span class="cat-bar-amount">${fmt.format(monto)}</span>
+        </div>
+      `).join('');
+    }
+  }
+
+  function renderTabla() {
+    const catFiltro = $('filtroCategoria').value;
+    const ambitoFiltro = $('filtroAmbito').value;
+
+    const filtrados = registros.filter(r =>
+      (!catFiltro || r.categoria === catFiltro) &&
+      (!ambitoFiltro || r.ambito === ambitoFiltro)
+    );
+
+    const body = $('regBody');
+    if (filtrados.length === 0) {
+      body.innerHTML = '';
+      $('tablaWrap').style.display = 'none';
+      $('regEmpty').style.display = 'block';
+      return;
+    }
+    $('tablaWrap').style.display = 'block';
+    $('regEmpty').style.display = 'none';
+
+    body.innerHTML = filtrados.map(r => `
+      <tr>
+        <td>${fmtFecha(r.fecha)}</td>
+        <td>${escapeHtml(r.descripcion)}</td>
+        <td>${escapeHtml(r.categoria)}</td>
+        <td>${r.ambito === 'pyme' ? 'PyME' : 'Personal'}</td>
+        <td><span class="tag ${r.tipo}">${r.tipo === 'compra' ? 'Compra' : 'Gasto'}</span></td>
+        <td>${fmt.format(r.monto)}</td>
+        <td><button class="btn-del" data-id="${r.id}">Borrar</button></td>
+      </tr>
+    `).join('');
+
+    body.querySelectorAll('.btn-del').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('¿Borrar este registro?')) return;
+        const { error } = await window.supabaseClient.from('gastos_compras').delete().eq('id', btn.dataset.id);
+        if (error) { alert('No se pudo borrar: ' + error.message); return; }
+        await cargarRegistros();
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  $('regForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('btnAgregar');
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    const { error } = await window.supabaseClient.from('gastos_compras').insert({
+      user_id: userId,
+      fecha: $('fFecha').value,
+      descripcion: $('fDescripcion').value.trim(),
+      categoria: $('fCategoria').value,
+      ambito: $('fAmbito').value,
+      tipo: $('fTipo').value,
+      monto: parseFloat($('fMonto').value) || 0,
+      notas: $('fNotas').value.trim() || null
+    });
+
+    btn.disabled = false;
+    btn.textContent = '➕ Agregar registro';
+
+    if (error) { alert('No se pudo guardar: ' + error.message); return; }
+
+    $('fDescripcion').value = '';
+    $('fMonto').value = '';
+    $('fNotas').value = '';
+    $('fFecha').value = hoyISO();
+
+    await cargarRegistros();
+  });
+
+  $('filtroMes').addEventListener('change', renderResumen);
+  $('filtroCategoria').addEventListener('change', renderTabla);
+  $('filtroAmbito').addEventListener('change', renderTabla);
+
+  $('btnDescargarPdf').addEventListener('click', () => {
+    const mes = $('filtroMes').value;
+    const delMes = registros.filter(r => r.fecha.slice(0, 7) === mes);
+    if (delMes.length === 0) { alert('No hay registros ese mes para descargar.'); return; }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('AXENTRAL — Compras y gastos de ' + mesLabel(mes), 14, 18);
+    doc.setFontSize(10);
+    doc.setTextColor(120);
+    doc.text('Generado el ' + new Date().toLocaleDateString('es-CR'), 14, 25);
+
+    const rows = delMes.map(r => [
+      fmtFecha(r.fecha), r.descripcion, r.categoria,
+      r.ambito === 'pyme' ? 'PyME' : 'Personal',
+      r.tipo === 'compra' ? 'Compra' : 'Gasto',
+      fmt.format(r.monto)
+    ]);
+    const total = delMes.reduce((s, r) => s + Number(r.monto), 0);
+
+    doc.autoTable({
+      startY: 32,
+      head: [['Fecha', 'Descripción', 'Categoría', 'Ámbito', 'Tipo', 'Monto']],
+      body: rows,
+      foot: [['', '', '', '', 'Total', fmt.format(total)]],
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [15, 20, 25] },
+      footStyles: { fillColor: [15, 20, 25], fontStyle: 'bold' }
+    });
+
+    doc.save('axentral-compras-gastos-' + mes + '.pdf');
+  });
+
+  init();
+})();
+</script>
+</body></html>
