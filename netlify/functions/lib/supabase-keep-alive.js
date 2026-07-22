@@ -1,7 +1,7 @@
 const https = require('https');
 
 const DEFAULT_TIMEOUT_MS = 10000;
-const SUPABASE_HEALTH_PATH = '/auth/v1/health';
+const SUPABASE_QUERY_PATH = '/rest/v1/calculos?select=id&limit=1';
 const MAX_DETAIL_LENGTH = 500;
 
 function jsonResponse(statusCode, payload) {
@@ -75,7 +75,7 @@ async function runKeepAlive(options = {}) {
         timestamp,
         supabase: {
           host: config.supabaseUrl.hostname,
-          path: SUPABASE_HEALTH_PATH,
+          path: SUPABASE_QUERY_PATH,
           statusCode: result.statusCode,
           detail: sanitizeDetail(result.body)
         }
@@ -98,7 +98,7 @@ function pingSupabase({ supabaseUrl, supabaseAnonKey, timeoutMs }) {
   return new Promise((resolve, reject) => {
     const options = {
       hostname: supabaseUrl.hostname,
-      path: SUPABASE_HEALTH_PATH,
+      path: SUPABASE_QUERY_PATH,
       method: 'GET',
       headers: {
         apikey: supabaseAnonKey,
