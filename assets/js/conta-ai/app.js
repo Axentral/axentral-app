@@ -26,7 +26,7 @@ function navigate() {
   setActiveRoute(root, route);
 
   try {
-    renderFinanceView(region, hash);
+    renderFinanceView(region, route);
   } catch (error) {
     renderViewError(region, hash, error);
   }
