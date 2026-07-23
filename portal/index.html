@@ -12,6 +12,16 @@
 .auth-msg.error{display:block;color:var(--danger);background:#fb71851a;border:1px solid color-mix(in srgb,var(--danger) 40%,var(--border))}
 .auth-msg.ok{display:block;color:var(--neon);background:var(--neon-soft);border:1px solid color-mix(in srgb,var(--neon) 40%,var(--border))}
 #dashboard{display:none}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:2rem}
+.app-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.3rem;display:flex;flex-direction:column;gap:.6rem;text-decoration:none;color:var(--text);transition:border-color .15s ease,transform .15s ease}
+.app-card:hover{border-color:var(--neon);transform:translateY(-2px)}
+.app-card.disabled{opacity:.55;pointer-events:none}
+.app-card .app-icon{font-size:1.6rem}
+.app-card h3{font-size:1.05rem}
+.app-card p{color:var(--muted);font-size:.85rem;margin:0}
+.app-card .app-tag{align-self:flex-start;margin-top:.2rem}
+.section-label{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem}
+.save-row{display:flex;justify-content:flex-end}
 .dash-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem}
 table.hist{width:100%;border-collapse:collapse;margin-top:1rem}
 table.hist th{text-align:left;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;padding:.6rem .5rem;border-bottom:1px solid var(--border)}
@@ -54,13 +64,40 @@ table.hist tr:last-child td{border-bottom:none}
 
 <div id="dashboard">
   <div class="dash-head">
-    <div><h2 style="margin-bottom:.3rem">Tu historial de cálculos</h2><p class="muted" id="userEmailLabel"></p></div>
+    <div><h2 style="margin-bottom:.3rem">Tus herramientas</h2><p class="muted" id="userEmailLabel"></p></div>
     <div style="display:flex;gap:.6rem">
-      <button class="btn btn-secondary" id="btnDescargarPdf">📄 Descargar PDF</button>
       <button class="btn btn-secondary" id="btnLogout">Cerrar sesión</button>
     </div>
   </div>
 
+  <div class="app-grid">
+    <a class="app-card" href="/servicios-y-apps/calculadora-precios-iva.html">
+      <span class="app-icon">🧮</span>
+      <h3>Calculadora de precios e IVA</h3>
+      <p>Costo, margen, IVA y precio recomendado.</p>
+      <span class="status available app-tag">Disponible</span>
+    </a>
+    <a class="app-card" href="/servicios-y-apps/control-compras-gastos.html">
+      <span class="app-icon">💰</span>
+      <h3>Control de compras y gastos</h3>
+      <p>Registrá y organizá tus compras y gastos.</p>
+      <span class="status available app-tag">Disponible</span>
+    </a>
+    <a class="app-card disabled" href="/servicios-y-apps/control-inventarios.html">
+      <span class="app-icon">📦</span>
+      <h3>Control de inventarios</h3>
+      <p>Entradas, salidas y stock mínimo.</p>
+      <span class="status progress app-tag">En desarrollo</span>
+    </a>
+    <a class="app-card" href="/conta-ai/">
+      <span class="app-icon">🤖</span>
+      <h3>Conta AI</h3>
+      <p>Tu asistente contable con IA.</p>
+      <span class="status progress app-tag">En desarrollo</span>
+    </a>
+  </div>
+
+  <div class="section-label">Historial de la calculadora de precios e IVA</div>
   <div class="panel">
     <div id="loadingMsg">Cargando tu historial...</div>
     <div id="tableWrap" style="display:none">
@@ -71,6 +108,9 @@ table.hist tr:last-child td{border-bottom:none}
     </div>
     <div class="empty-state" id="emptyState" style="display:none">
       Todavía no guardaste ningún cálculo. Andá a la <a href="/servicios-y-apps/calculadora-precios-iva.html">calculadora de precios e IVA</a> y guardá tu primero.
+    </div>
+    <div class="save-row" style="margin-top:1rem" id="pdfRow">
+      <button class="btn btn-secondary" id="btnDescargarPdf">📄 Descargar historial en PDF</button>
     </div>
   </div>
 </div>
