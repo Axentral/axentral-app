@@ -24,11 +24,13 @@ table.hist tr:last-child td{border-bottom:none}
 .tag{display:inline-block;padding:.15rem .55rem;border-radius:999px;font-size:.72rem;font-weight:700}
 .tag.compra{background:#3b82f61a;color:#60a5fa}
 .tag.gasto{background:#fb71851a;color:#f87171}
+.tag.si{background:var(--neon-soft);color:var(--neon)}
+.tag.no{background:var(--surface-2);color:var(--muted)}
 .btn-del{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.82rem}
 .btn-del:hover{text-decoration:underline}
 .empty-state{color:var(--muted);text-align:center;padding:2rem 0}
 #appArea{display:none}
-@media(max-width:640px){.form-grid{grid-template-columns:1fr}table.hist{font-size:.8rem}table.hist th:nth-child(4),table.hist td:nth-child(4){display:none}}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr}table.hist{font-size:.8rem}table.hist th:nth-child(4),table.hist td:nth-child(4),table.hist th:nth-child(6),table.hist td:nth-child(6){display:none}}
 </style>
 </head><body><header class="site-header"><div class="container nav"><a class="logo" href="/">AX<span>ENTRAL</span></a><ul class="nav-links"><li><a href="/">Inicio</a></li><li><a class="active" href="/servicios-y-apps/">Servicios y Apps</a></li><li><a href="/conta-ai/">Conta AI</a></li><li><a href="/portal/">Portal</a></li><li><a href="/contacto/">Contacto</a></li></ul><div class="nav-actions"><button class="theme-toggle" data-theme-toggle>☀️ Modo claro</button><a class="btn btn-secondary" href="/portal/">Iniciar sesión</a></div></div></header>
 
@@ -64,6 +66,12 @@ table.hist tr:last-child td{border-bottom:none}
           <option>Alimentación</option>
           <option>Renta / alquiler</option>
           <option>Salarios</option>
+          <option>Cargas sociales (CCSS)</option>
+          <option>Honorarios profesionales</option>
+          <option>Seguros</option>
+          <option>Mantenimiento y reparaciones</option>
+          <option>Intereses y comisiones bancarias</option>
+          <option>Depreciación</option>
           <option>Impuestos</option>
           <option>Otros</option>
         </select>
@@ -76,12 +84,21 @@ table.hist tr:last-child td{border-bottom:none}
         </select>
       </div>
     </div>
-    <div class="field">
-      <label for="fAmbito">Ámbito</label>
-      <select id="fAmbito">
-        <option value="personal">Personal</option>
-        <option value="pyme">PyME / negocio</option>
-      </select>
+    <div class="form-grid">
+      <div class="field">
+        <label for="fAmbito">Ámbito</label>
+        <select id="fAmbito">
+          <option value="personal">Personal</option>
+          <option value="pyme">PyME / negocio</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fDeducible">¿Deducible de renta?</label>
+        <select id="fDeducible">
+          <option value="no">No</option>
+          <option value="si">Sí</option>
+        </select>
+      </div>
     </div>
     <div class="field"><label for="fNotas">Notas (opcional)</label><textarea id="fNotas" rows="2" maxlength="300"></textarea></div>
     <button type="submit" class="btn btn-primary" id="btnAgregar">➕ Agregar registro</button>
@@ -97,6 +114,7 @@ table.hist tr:last-child td{border-bottom:none}
     <div class="summary-card"><div class="label">Total del mes</div><div class="value" id="sumTotal">₡0</div></div>
     <div class="summary-card"><div class="label">Personal</div><div class="value" id="sumPersonal">₡0</div></div>
     <div class="summary-card"><div class="label">PyME</div><div class="value" id="sumPyme">₡0</div></div>
+    <div class="summary-card"><div class="label">Deducible de renta</div><div class="value" id="sumDeducible">₡0</div></div>
     <div class="summary-card"><div class="label">Cantidad de registros</div><div class="value" id="sumCantidad">0</div></div>
   </div>
   <h3 style="margin-bottom:.8rem">Por categoría</h3>
@@ -116,10 +134,15 @@ table.hist tr:last-child td{border-bottom:none}
       <option value="personal">Personal</option>
       <option value="pyme">PyME</option>
     </select>
+    <select id="filtroDeducible">
+      <option value="">Deducible: todos</option>
+      <option value="si">Solo deducibles</option>
+      <option value="no">Solo no deducibles</option>
+    </select>
   </div>
   <div id="tablaWrap">
     <table class="hist">
-      <thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Ámbito</th><th>Tipo</th><th>Monto</th><th></th></tr></thead>
+      <thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Ámbito</th><th>Tipo</th><th>Deducible</th><th>Monto</th><th></th></tr></thead>
       <tbody id="regBody"></tbody>
     </table>
   </div>
@@ -214,10 +237,12 @@ table.hist tr:last-child td{border-bottom:none}
     const total = delMes.reduce((s, r) => s + Number(r.monto), 0);
     const personal = delMes.filter(r => r.ambito === 'personal').reduce((s, r) => s + Number(r.monto), 0);
     const pyme = delMes.filter(r => r.ambito === 'pyme').reduce((s, r) => s + Number(r.monto), 0);
+    const deducible = delMes.filter(r => r.deducible).reduce((s, r) => s + Number(r.monto), 0);
 
     $('sumTotal').textContent = fmt.format(total);
     $('sumPersonal').textContent = fmt.format(personal);
     $('sumPyme').textContent = fmt.format(pyme);
+    $('sumDeducible').textContent = fmt.format(deducible);
     $('sumCantidad').textContent = delMes.length;
 
     const porCategoria = {};
@@ -244,10 +269,12 @@ table.hist tr:last-child td{border-bottom:none}
   function renderTabla() {
     const catFiltro = $('filtroCategoria').value;
     const ambitoFiltro = $('filtroAmbito').value;
+    const deducibleFiltro = $('filtroDeducible').value;
 
     const filtrados = registros.filter(r =>
       (!catFiltro || r.categoria === catFiltro) &&
-      (!ambitoFiltro || r.ambito === ambitoFiltro)
+      (!ambitoFiltro || r.ambito === ambitoFiltro) &&
+      (!deducibleFiltro || (deducibleFiltro === 'si' ? r.deducible : !r.deducible))
     );
 
     const body = $('regBody');
@@ -267,6 +294,7 @@ table.hist tr:last-child td{border-bottom:none}
         <td>${escapeHtml(r.categoria)}</td>
         <td>${r.ambito === 'pyme' ? 'PyME' : 'Personal'}</td>
         <td><span class="tag ${r.tipo}">${r.tipo === 'compra' ? 'Compra' : 'Gasto'}</span></td>
+        <td><span class="tag ${r.deducible ? 'si' : 'no'}">${r.deducible ? 'Sí' : 'No'}</span></td>
         <td>${fmt.format(r.monto)}</td>
         <td><button class="btn-del" data-id="${r.id}">Borrar</button></td>
       </tr>
@@ -301,6 +329,7 @@ table.hist tr:last-child td{border-bottom:none}
       categoria: $('fCategoria').value,
       ambito: $('fAmbito').value,
       tipo: $('fTipo').value,
+      deducible: $('fDeducible').value === 'si',
       monto: parseFloat($('fMonto').value) || 0,
       notas: $('fNotas').value.trim() || null
     });
@@ -321,6 +350,7 @@ table.hist tr:last-child td{border-bottom:none}
   $('filtroMes').addEventListener('change', renderResumen);
   $('filtroCategoria').addEventListener('change', renderTabla);
   $('filtroAmbito').addEventListener('change', renderTabla);
+  $('filtroDeducible').addEventListener('change', renderTabla);
 
   $('btnDescargarPdf').addEventListener('click', () => {
     const mes = $('filtroMes').value;
@@ -339,15 +369,20 @@ table.hist tr:last-child td{border-bottom:none}
       fmtFecha(r.fecha), r.descripcion, r.categoria,
       r.ambito === 'pyme' ? 'PyME' : 'Personal',
       r.tipo === 'compra' ? 'Compra' : 'Gasto',
+      r.deducible ? 'Sí' : 'No',
       fmt.format(r.monto)
     ]);
     const total = delMes.reduce((s, r) => s + Number(r.monto), 0);
+    const totalDeducible = delMes.filter(r => r.deducible).reduce((s, r) => s + Number(r.monto), 0);
 
     doc.autoTable({
       startY: 32,
-      head: [['Fecha', 'Descripción', 'Categoría', 'Ámbito', 'Tipo', 'Monto']],
+      head: [['Fecha', 'Descripción', 'Categoría', 'Ámbito', 'Tipo', 'Deducible', 'Monto']],
       body: rows,
-      foot: [['', '', '', '', 'Total', fmt.format(total)]],
+      foot: [
+        ['', '', '', '', '', 'Total deducible', fmt.format(totalDeducible)],
+        ['', '', '', '', '', 'Total del mes', fmt.format(total)]
+      ],
       styles: { fontSize: 8 },
       headStyles: { fillColor: [15, 20, 25] },
       footStyles: { fillColor: [15, 20, 25], fontStyle: 'bold' }
