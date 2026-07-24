@@ -26,6 +26,18 @@ table.hist tr:last-child td{border-bottom:none}
 .tag.gasto{background:#fb71851a;color:#f87171}
 .tag.si{background:var(--neon-soft);color:var(--neon)}
 .tag.no{background:var(--surface-2);color:var(--muted)}
+.import-drop{border:2px dashed var(--border);border-radius:14px;padding:1.5rem;text-align:center;cursor:pointer;transition:border-color .15s ease}
+.import-drop:hover,.import-drop.dragover{border-color:var(--neon)}
+.import-drop input{display:none}
+table.preview{width:100%;border-collapse:collapse;margin-top:1rem;font-size:.82rem}
+table.preview th{text-align:left;color:var(--muted);font-size:.72rem;text-transform:uppercase;padding:.5rem;border-bottom:1px solid var(--border)}
+table.preview td{padding:.5rem;border-bottom:1px solid var(--border)}
+table.preview tr.row-error{background:#fb71850d}
+.row-status{font-size:.75rem;font-weight:700}
+.row-status.ok{color:var(--neon)}
+.row-status.err{color:var(--danger)}
+.import-summary{display:flex;gap:1.2rem;flex-wrap:wrap;margin:1rem 0;font-size:.88rem}
+.import-summary strong{font-size:1.1rem;display:block}
 .btn-del{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.82rem}
 .btn-del:hover{text-decoration:underline}
 .empty-state{color:var(--muted);text-align:center;padding:2rem 0}
@@ -122,6 +134,39 @@ table.hist tr:last-child td{border-bottom:none}
   <div class="empty-state" id="sumEmpty" style="display:none">No hay registros este mes todavía.</div>
 </div>
 
+<div class="panel" style="margin-bottom:1.5rem">
+  <h2>Importar desde Excel</h2>
+  <p class="muted" style="margin-top:.5rem">Subí varios registros de una vez. Usá la plantilla para que las columnas queden en el orden correcto.</p>
+
+  <div style="margin-top:1rem">
+    <a class="btn btn-secondary" href="/assets/plantilla-compras-gastos.xlsx" download>⬇️ Descargar plantilla de Excel</a>
+  </div>
+
+  <div class="import-drop" id="importDrop" style="margin-top:1.2rem">
+    <input type="file" id="importFile" accept=".xlsx,.xls">
+    <p><strong>Hacé clic acá o arrastrá tu archivo</strong></p>
+    <p class="muted" style="font-size:.85rem;margin-top:.3rem">Solo archivos .xlsx que sigan el orden de columnas de la plantilla</p>
+  </div>
+
+  <div id="importResultado" style="display:none;margin-top:1.2rem">
+    <div class="import-summary">
+      <div><strong id="impTotal">0</strong><span class="muted">filas leídas</span></div>
+      <div><strong id="impValidas" style="color:var(--neon)">0</strong><span class="muted">listas para importar</span></div>
+      <div><strong id="impErrores" style="color:var(--danger)">0</strong><span class="muted">con errores</span></div>
+    </div>
+    <div style="max-height:340px;overflow:auto">
+      <table class="preview">
+        <thead><tr><th></th><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Ámbito</th><th>Tipo</th><th>Deducible</th><th>Monto</th></tr></thead>
+        <tbody id="importBody"></tbody>
+      </table>
+    </div>
+    <div class="save-row" style="margin-top:1rem;justify-content:flex-start;gap:.7rem">
+      <button class="btn btn-primary" id="btnConfirmarImport">✅ Importar filas válidas</button>
+      <button class="btn btn-secondary" id="btnCancelarImport">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div class="panel">
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
     <h2>Todos tus registros</h2>
@@ -159,6 +204,7 @@ table.hist tr:last-child td{border-bottom:none}
 <script src="/assets/js/supabase-client.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="/assets/js/main.js"></script>
 <script>
 (function(){
@@ -389,6 +435,171 @@ table.hist tr:last-child td{border-bottom:none}
     });
 
     doc.save('axentral-compras-gastos-' + mes + '.pdf');
+  });
+
+  // --- Importar desde Excel ---
+
+  const CATEGORIAS_VALIDAS = ["Inventario","Suministros y oficina","Marketing y publicidad","Servicios públicos","Transporte","Alimentación","Renta / alquiler","Salarios","Cargas sociales (CCSS)","Honorarios profesionales","Seguros","Mantenimiento y reparaciones","Intereses y comisiones bancarias","Depreciación","Impuestos","Otros"];
+  const AMBITOS_VALIDOS = ["personal", "pyme"];
+  const TIPOS_VALIDOS = ["compra", "gasto"];
+  const DEDUCIBLE_VALIDOS = ["si", "no"];
+
+  let filasImportadas = [];
+
+  const dropZone = $('importDrop');
+  const fileInput = $('importFile');
+
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) procesarArchivo(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files[0]) procesarArchivo(e.target.files[0]);
+  });
+
+  function excelFechaATexto(valor) {
+    // Las fechas en Excel pueden llegar como número de serie o como texto
+    if (typeof valor === 'number') {
+      const fecha = XLSX.SSF.parse_date_code(valor);
+      if (!fecha) return null;
+      const mm = String(fecha.m).padStart(2, '0');
+      const dd = String(fecha.d).padStart(2, '0');
+      return `${fecha.y}-${mm}-${dd}`;
+    }
+    if (typeof valor === 'string') {
+      const limpio = valor.trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(limpio)) return limpio;
+    }
+    return null;
+  }
+
+  function validarFila(fila) {
+    const errores = [];
+
+    const fecha = excelFechaATexto(fila[0]);
+    if (!fecha) errores.push('Fecha inválida (usá AAAA-MM-DD)');
+
+    const descripcion = (fila[1] || '').toString().trim();
+    if (!descripcion) errores.push('Falta descripción');
+
+    const categoria = (fila[2] || '').toString().trim();
+    if (!CATEGORIAS_VALIDAS.includes(categoria)) errores.push('Categoría no reconocida');
+
+    const ambito = (fila[3] || '').toString().trim().toLowerCase();
+    if (!AMBITOS_VALIDOS.includes(ambito)) errores.push('Ámbito debe ser "personal" o "pyme"');
+
+    const tipo = (fila[4] || '').toString().trim().toLowerCase();
+    if (!TIPOS_VALIDOS.includes(tipo)) errores.push('Tipo debe ser "compra" o "gasto"');
+
+    const deducibleTxt = (fila[5] || '').toString().trim().toLowerCase();
+    if (!DEDUCIBLE_VALIDOS.includes(deducibleTxt)) errores.push('Deducible debe ser "si" o "no"');
+
+    const monto = parseFloat(fila[6]);
+    if (isNaN(monto) || monto <= 0) errores.push('Monto inválido');
+
+    const notas = fila[7] ? fila[7].toString().trim() : null;
+
+    return {
+      valido: errores.length === 0,
+      errores,
+      datos: { fecha, descripcion, categoria, ambito, tipo, deducible: deducibleTxt === 'si', monto, notas }
+    };
+  }
+
+  function procesarArchivo(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      let filas;
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'array', cellDates: false });
+        const hoja = wb.Sheets[wb.SheetNames[0]];
+        const todas = XLSX.utils.sheet_to_json(hoja, { header: 1, raw: true, defval: '' });
+        // La plantilla tiene encabezados hasta la fila 4 (índice 3) y la fila de ejemplo en la 5 (índice 4)
+        filas = todas.slice(4).filter(f => f.some(v => v !== '' && v !== null && v !== undefined));
+      } catch (err) {
+        alert('No se pudo leer el archivo. Confirmá que sea un .xlsx válido basado en la plantilla.');
+        return;
+      }
+
+      if (filas.length === 0) {
+        alert('No encontré filas con datos. Recordá completar desde la fila 6 en adelante.');
+        return;
+      }
+
+      filasImportadas = filas.map(validarFila);
+      renderPreviewImport();
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function renderPreviewImport() {
+    const validas = filasImportadas.filter(f => f.valido).length;
+    const errores = filasImportadas.length - validas;
+
+    $('impTotal').textContent = filasImportadas.length;
+    $('impValidas').textContent = validas;
+    $('impErrores').textContent = errores;
+
+    const body = $('importBody');
+    body.innerHTML = filasImportadas.map(f => `
+      <tr class="${f.valido ? '' : 'row-error'}">
+        <td><span class="row-status ${f.valido ? 'ok' : 'err'}">${f.valido ? '✓' : '✕'}</span></td>
+        <td>${escapeHtml(f.datos.fecha || (f.datos.fecha === null ? '—' : String(f.datos.fecha)))}</td>
+        <td>${escapeHtml(f.datos.descripcion || '—')}${f.errores.length ? `<div class="muted" style="font-size:.75rem">${escapeHtml(f.errores.join(', '))}</div>` : ''}</td>
+        <td>${escapeHtml(f.datos.categoria || '—')}</td>
+        <td>${escapeHtml(f.datos.ambito || '—')}</td>
+        <td>${escapeHtml(f.datos.tipo || '—')}</td>
+        <td>${f.datos.deducible ? 'Sí' : 'No'}</td>
+        <td>${isNaN(f.datos.monto) ? '—' : fmt.format(f.datos.monto)}</td>
+      </tr>
+    `).join('');
+
+    $('importResultado').style.display = 'block';
+    $('btnConfirmarImport').disabled = validas === 0;
+  }
+
+  $('btnCancelarImport').addEventListener('click', () => {
+    filasImportadas = [];
+    fileInput.value = '';
+    $('importResultado').style.display = 'none';
+  });
+
+  $('btnConfirmarImport').addEventListener('click', async () => {
+    const validas = filasImportadas.filter(f => f.valido);
+    if (validas.length === 0) return;
+
+    const btn = $('btnConfirmarImport');
+    btn.disabled = true;
+    btn.textContent = 'Importando...';
+
+    const registrosNuevos = validas.map(f => ({
+      user_id: userId,
+      fecha: f.datos.fecha,
+      descripcion: f.datos.descripcion,
+      categoria: f.datos.categoria,
+      ambito: f.datos.ambito,
+      tipo: f.datos.tipo,
+      deducible: f.datos.deducible,
+      monto: f.datos.monto,
+      notas: f.datos.notas
+    }));
+
+    const { error } = await window.supabaseClient.from('gastos_compras').insert(registrosNuevos);
+
+    btn.disabled = false;
+    btn.textContent = '✅ Importar filas válidas';
+
+    if (error) { alert('No se pudo importar: ' + error.message); return; }
+
+    alert(`Se importaron ${registrosNuevos.length} registros correctamente.`);
+    filasImportadas = [];
+    fileInput.value = '';
+    $('importResultado').style.display = 'none';
+    await cargarRegistros();
   });
 
   init();
